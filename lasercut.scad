@@ -30,13 +30,10 @@ module lasercutoutSquare(thickness, x=0, y=0,
         cutouts_vb = [],
         flat_adjust = [],
         milling_bit = 0.0,
-	internal = false,
 )
 {
     points = [[0,0], [x,0], [x,y], [0,y], [0,0]];
-lcovar1= internal ? 0 : thickness;
-translate([lcovar1, lcovar1, 0])
-lasercutout(thickness=thickness,  
+    lasercutout(thickness=thickness,
         points = points, 
         simple_tabs = simple_tabs, 
         simple_tab_holes = simple_tab_holes, 
@@ -600,9 +597,28 @@ module lasercutoutBox(thickness, x=0, y=0, z=0, sides=6, num_fingers=2,
         circles_remove_a=[],
         slits_a = [],
         cutouts_a = [],
-        milling_bit = 0.0
+        milling_bit = 0.0,
 )
 {
+    if (sides==1)
+    {
+        st = [];
+        fj = [
+            [ [UP, 1, num_fingers], [DOWN, 1, num_fingers], [LEFT, 1, num_fingers], [RIGHT, 1, num_fingers]  ],
+        ];
+        translate([thickness,thickness,0]) lasercutoutBoxAdjustedFJ(thickness = thickness, x=x-thickness*2, y=y-thickness*2 , z=z-thickness*2, sides=sides, fj=fj, st=st,
+            simple_tab_holes_a=simple_tab_holes_a,
+            captive_nuts_a=captive_nuts_a, captive_nut_holes_a=captive_nut_holes_a,
+            screw_tab_holes_a=screw_tab_holes_a,
+            twist_holes_a=twist_holes_a,
+            clip_holes_a=clip_holes_a,
+            circles_add_a=circles_add_a,
+            circles_remove_a=circles_remove_a,
+            slits_a=slits_a,
+            cutouts_a=cutouts_a,
+            milling_bit = milling_bit
+        );
+    }
 
     if (sides==4)
     {
@@ -613,7 +629,7 @@ module lasercutoutBox(thickness, x=0, y=0, z=0, sides=6, num_fingers=2,
             [ [UP, 1, num_fingers], [DOWN, 1, num_fingers],    ],
         ];
         translate([0,thickness,0]) lasercutoutBoxAdjustedFJ(thickness = thickness, x=x, y=y-thickness*2 , z=z-thickness*2, sides=sides, fj=fj,
-            simple_tab_holes_a=simple_tab_holes_a, 
+            simple_tab_holes_a=simple_tab_holes_a,
             captive_nuts_a=captive_nuts_a, captive_nut_holes_a=captive_nut_holes_a,
             screw_tab_holes_a=screw_tab_holes_a,
             twist_holes_a=twist_holes_a,
@@ -710,9 +726,9 @@ module lasercutoutBoxAdjustedFJ(thickness, x=0, y=0, z=0, sides=6, fj=[], st=[],
                                 circles_add = circles_add_a[0], circles_remove = circles_remove_a[0],
                                 slits = slits_a[0],
                                 cutouts = cutouts_a[0],
-                                milling_bit = milling_bit,
-				internal = true);
-
+                                milling_bit = milling_bit);
+    if (sides>1)
+    {
     translate([0,0,z+thickness]) lasercutoutSquare(thickness=thickness,x=x, y=y, simple_tabs = st[1], finger_joints = fj[1],
                                 simple_tab_holes=simple_tab_holes_a[1], captive_nuts=captive_nuts_a[1],
                                 captive_nut_holes = captive_nut_holes_a[1],
@@ -722,9 +738,12 @@ module lasercutoutBoxAdjustedFJ(thickness, x=0, y=0, z=0, sides=6, fj=[], st=[],
                                 circles_add = circles_add_a[1], circles_remove = circles_remove_a[1],
                                 slits = slits_a[1],
                                 cutouts = cutouts_a[1],
-                                milling_bit = milling_bit,
-				internal = true);
+                                milling_bit = milling_bit
+                                );
+    }
 
+    if (sides>2)
+    {
     translate([0,0,thickness]) rotate([90,0,0]) lasercutoutSquare(thickness=thickness,x=x, y=z, finger_joints = fj[2],
                                 simple_tab_holes=simple_tab_holes_a[2], captive_nuts=captive_nuts_a[2],
                                 captive_nut_holes = captive_nut_holes_a[2],
@@ -734,9 +753,12 @@ module lasercutoutBoxAdjustedFJ(thickness, x=0, y=0, z=0, sides=6, fj=[], st=[],
                                 circles_add = circles_add_a[2], circles_remove = circles_remove_a[2],
                                 slits = slits_a[2],
                                 cutouts = cutouts_a[2],
-                                milling_bit = milling_bit,
-				internal = true);
+                                milling_bit = milling_bit
+                                );
+    }
 
+    if (sides>3)
+    {
     translate([0,y+thickness,thickness]) rotate([90,0,0]) lasercutoutSquare(thickness=thickness,x=x, y=z, simple_tabs = st[2], 
                                 finger_joints = fj[3],
                                 simple_tab_holes=simple_tab_holes_a[3], captive_nuts=captive_nuts_a[3],
@@ -747,8 +769,9 @@ module lasercutoutBoxAdjustedFJ(thickness, x=0, y=0, z=0, sides=6, fj=[], st=[],
                                 circles_add = circles_add_a[3], circles_remove = circles_remove_a[3],
                                 slits = slits_a[3],
                                 cutouts = cutouts_a[3],
-                                milling_bit = milling_bit,
-                                internal = true);
+                                milling_bit = milling_bit
+                                );
+    }
     
     if (sides>4)
     {
@@ -761,8 +784,8 @@ module lasercutoutBoxAdjustedFJ(thickness, x=0, y=0, z=0, sides=6, fj=[], st=[],
                                 circles_add = circles_add_a[4], circles_remove = circles_remove_a[4],
                                 slits = slits_a[4],
                                 cutouts = cutouts_a[4],
-                                milling_bit = milling_bit,
-				internal = true);
+                                milling_bit = milling_bit
+                                );
         }
     
     if (sides>5)
@@ -777,8 +800,8 @@ module lasercutoutBoxAdjustedFJ(thickness, x=0, y=0, z=0, sides=6, fj=[], st=[],
                                 circles_add = circles_add_a[5], circles_remove = circles_remove_a[5],
                                 slits = slits_a[5],
                                 cutouts = cutouts_a[5],
-                                milling_bit = milling_bit,
-				internal = true);
+                                milling_bit = milling_bit
+                                );
     }
 }
 
@@ -923,7 +946,7 @@ module lasercutoutVinylBox(thickness, x=0, y=0, z=0, sides=6, overlapdistance=-1
                 slits = slits_a[0],
                 cutouts = cutouts_a[0],
                 milling_bit = milling_bit
-                );    
+                );
     }
    if (sides>1)
    {
@@ -940,7 +963,7 @@ module lasercutoutVinylBox(thickness, x=0, y=0, z=0, sides=6, overlapdistance=-1
                 slits = slits_a[1],
                 cutouts = cutouts_a[1],
                 milling_bit = milling_bit
-                );    
+                );
     }
     if (sides>2)
     {
@@ -956,8 +979,8 @@ module lasercutoutVinylBox(thickness, x=0, y=0, z=0, sides=6, overlapdistance=-1
                 circles_add = circles_add_a[2], circles_remove = circles_remove_a[2],
                 slits = slits_a[2],
                 cutouts = cutouts_a[2],
-                milling_bit = milling_bit,
-                internal = true);        
+                milling_bit = milling_bit
+                );
     }
     if (sides>3)
     {
@@ -973,8 +996,8 @@ module lasercutoutVinylBox(thickness, x=0, y=0, z=0, sides=6, overlapdistance=-1
                 circles_add = circles_add_a[3], circles_remove = circles_remove_a[3],
                 slits = slits_a[3],
                 cutouts = cutouts_a[3],
-                milling_bit = milling_bit,
-                internal = true);        
+                milling_bit = milling_bit
+                );
     }
     if (sides>4)
     {
@@ -991,7 +1014,7 @@ module lasercutoutVinylBox(thickness, x=0, y=0, z=0, sides=6, overlapdistance=-1
                 slits = slits_a[4],
                 cutouts = cutouts_a[4],
                 milling_bit = milling_bit
-                );    
+                );
     }
     if (sides>5)
     {
